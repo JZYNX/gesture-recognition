@@ -17,7 +17,7 @@ cap.set(4, hCam)
 curTime = 0
 prevTime = 0
 
-detector = htm.handDetector(detectionCon=0.7)
+detector = htm.handDetector(detectionCon=0.5)
 
 devices = AudioUtilities.GetSpeakers()
 interface = devices.Activate(
