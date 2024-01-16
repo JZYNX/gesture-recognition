@@ -48,10 +48,14 @@ while True:
 
         x1, y1 = lmList[4][1], lmList[4][2]
         x2, y2 = lmList[8][1], lmList[8][2]
+        x3, y3, x4, y4, x5, y5 = lmList[12][1], lmList[12][2], lmList[16][1], lmList[16][2], lmList[20][1], lmList[20][2]
         cx, cy = (x1+x2)//2, (y1+y2)//2
 
         cv2.circle(img, (x1,y1), 15, (255,0,255), cv2.FILLED)
         cv2.circle(img, (x2,y2), 15, (255,0,255), cv2.FILLED)
+        cv2.circle(img, (x3,y3), 15, (255,0,255), cv2.FILLED)
+        cv2.circle(img, (x4,y4), 15, (255,0,255), cv2.FILLED)
+        cv2.circle(img, (x5,y5), 15, (255,0,255), cv2.FILLED)
         cv2.line(img, (x1,y1),(x2,y2), (255,0,255), 3)
         cv2.circle(img, (cx,cy), 15, (255,0,255), cv2.FILLED)
 
@@ -64,9 +68,19 @@ while True:
         volPer = np.interp(length, [20,200], [0, 100])
         print(length, vol)
 
-        if length < 30 and not thumb_touching_index:
+        if (lmList[8][2] > lmList[5][2]) and (lmList[12][2] > lmList[9][2]) and (lmList[16][2] > lmList[13][2]) and (lmList[20][2] > lmList[17][2]):
+            # test // cv2.circle(img, (50,50), 15, (255,255,255), cv2.FILLED)
+            # TIPS below PALM + direction of thumb -> Fast-Foward or Roll-Back
+            if lmList[4][1] < lmList[3][1] and lmList[4][1] < lmList[8][1]:
+                # Fast-forward
+                pyautogui.press('right')
+            elif lmList[4][1] > lmList[3][1] and lmList[4][1] > lmList[8][1]:
+                # Roll-back
+                pyautogui.press('left')
+
+        if length < 30 and all(y < y2 for y in [y3, y4, y5]) and not thumb_touching_index:
             # THUMB_TIP touches INDEX_TIP -> Pause
-            cv2.circle(img, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
+            cv2.circle(img, (cx, cy), 15 , (0, 255, 0), cv2.FILLED)
             thumb_touching_index = True
 
             # Simulate press spacebar
