@@ -5,6 +5,7 @@ import HandTrackingModule as htm
 import math
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+import pyautogui
 
 #########################################
 wCam, hCam = 640, 480
@@ -29,6 +30,10 @@ volRange = volume.GetVolumeRange()
 minVol, maxVol = volRange[0], volRange[1]
 volBar = 400
 volPer = 0
+
+# State control for pausing
+thumb_touching_index = False
+space_pressed = False
 
 while True:
     success, img = cap.read()
@@ -58,11 +63,20 @@ while True:
         volBar = np.interp(length, [20,200], [400, 150])
         volPer = np.interp(length, [20,200], [0, 100])
         print(length, vol)
-        volume.SetMasterVolumeLevel(vol, None)
 
-        if length < 50:
-            # THUMB_TIP touches INDEX_TIP
+        if length < 30 and not thumb_touching_index:
+            # THUMB_TIP touches INDEX_TIP -> Pause
             cv2.circle(img, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
+            thumb_touching_index = True
+
+            # Simulate press spacebar
+            if not space_pressed:
+                pyautogui.press('space')
+                space_pressed = True
+
+        elif length >= 30:
+            thumb_touching_index = False
+            space_pressed = False
 
     # Show Volume
     cv2.rectangle(img, (50,150), (85,400), (255, 0, 0), 3)
